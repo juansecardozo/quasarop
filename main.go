@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/joho/godotenv"
 )
@@ -13,5 +14,5 @@ func main() {
 	if err != nil {
 		fmt.Println("Error loading .env file")
 	}
-	http.ListenAndServe(":8080", ChiRouter().InitRouter())
+	http.ListenAndServe(os.Getenv("DB_PORT"), ChiRouter().InitRouter())
 }
