@@ -4,8 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/juansecardozo/quasar/interfaces"
+	"github.com/juansecardozo/quasar/models"
+	"github.com/juansecardozo/quasar/viewmodels"
 )
 
 type TopSecretController struct {
@@ -19,6 +23,42 @@ func (controller *TopSecretController) ResolveTransmitterResponse(res http.Respo
 	if err != nil {
 		res.WriteHeader(http.StatusNotFound)
 		fmt.Println(err)
+	} else {
+		res.Header().Add("Content-Type", "application/json")
+		data, _ := json.Marshal(transmitter)
+		res.Write(data)
+	}
+}
+
+func (controller *TopSecretController) UpdateSatelliteResponse(res http.ResponseWriter, req *http.Request) {
+	var s models.SatelliteModel
+
+	d := json.NewDecoder(req.Body)
+	d.DisallowUnknownFields()
+
+	_ = d.Decode(&s)
+
+	s.Name = strings.Title(chi.URLParam(req, "satellite_name"))
+
+	satellite, err := controller.UpdateSatellite(s)
+
+	if err != nil {
+		res.Header().Add("Content-Type", "application/json")
+		res.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(res).Encode(viewmodels.ErrorVM{Status: "error", Message: err.Error()})
+	} else {
+		res.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(res).Encode(viewmodels.SatelliteVM{Distance: satellite.Distance, Message: satellite.Message})
+	}
+}
+
+func (controller *TopSecretController) ResolveSplitTransmitterResponse(res http.ResponseWriter, req *http.Request) {
+	transmitter, err := controller.ResolveSplitTransmitter()
+
+	if err != nil {
+		res.Header().Add("Content-Type", "application/json")
+		res.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(res).Encode(viewmodels.ErrorVM{Status: "error", Message: err.Error()})
 	} else {
 		res.Header().Add("Content-Type", "application/json")
 		data, _ := json.Marshal(transmitter)

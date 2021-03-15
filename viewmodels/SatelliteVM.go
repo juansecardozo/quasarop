@@ -1,5 +1,6 @@
 package viewmodels
 
 type SatelliteVM struct {
-	Name string
+	Distance float64
+	Message  []string
 }

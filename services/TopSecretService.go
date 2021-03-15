@@ -30,8 +30,8 @@ func (service *TopSecretService) ResolveTransmitter(req *http.Request) (models.T
 	satellites := make([]models.SatelliteModel, 0)
 	for _, message := range w.Satellites {
 		satellite, _ := service.FindByName(strings.Title(message.Name))
-		satellite.SetDistance(message.Distance)
-		satellite.SetMessage(message.Message)
+		satellite.Distance = message.Distance
+		satellite.Message = message.Message
 		satellites = append(satellites, satellite)
 	}
 
@@ -55,11 +55,11 @@ func (service *TopSecretService) GetLocation(satellites []models.SatelliteModel)
 
 	points := make([]trilateration.Point, 0)
 	for _, satellite := range satellites {
-		if satellite.GetDistance() == 0 {
+		if satellite.Distance == 0 {
 			return models.PositionModel{X: satellite.X, Y: satellite.Y}, nil
 		}
 
-		points = append(points, trilateration.Point{X: satellite.X, Y: satellite.Y, Z: 0, R: satellite.GetDistance()})
+		points = append(points, trilateration.Point{X: satellite.X, Y: satellite.Y, Z: 0, R: satellite.Distance})
 	}
 
 	solution, err := trilateration.Solve(points[0], points[1], points[2])
@@ -76,16 +76,16 @@ func (service *TopSecretService) GetLocation(satellites []models.SatelliteModel)
 func (service *TopSecretService) GetMessage(satellites []models.SatelliteModel) (string, error) {
 	for pos, satellite := range satellites {
 		if pos > 0 {
-			if len(satellite.GetMessage()) != len((satellites[pos-1]).GetMessage()) {
+			if len(satellite.Message) != len((satellites[pos-1]).Message) {
 				return "", errors.New("not enough data")
 			}
 		}
 	}
 
-	message := make([]string, len(satellites[0].GetMessage()))
-	for i := 0; i < len(satellites[0].GetMessage()); i++ {
+	message := make([]string, len(satellites[0].Message))
+	for i := 0; i < len(satellites[0].Message); i++ {
 		for j := 0; j < len(satellites); j++ {
-			text := satellites[j].GetMessage()[i]
+			text := satellites[j].Message[i]
 			if text != "" {
 				message[i] = text
 				break
@@ -97,4 +97,34 @@ func (service *TopSecretService) GetMessage(satellites []models.SatelliteModel) 
 	}
 
 	return strings.Join(message, " "), nil
+}
+
+func (service *TopSecretService) UpdateSatellite(satellite models.SatelliteModel) (models.SatelliteModel, error) {
+	satellite, err := service.UpdateByName(satellite)
+
+	if err != nil {
+		return models.SatelliteModel{}, err
+	}
+
+	return satellite, nil
+}
+
+func (service *TopSecretService) ResolveSplitTransmitter() (models.TransmitterModel, error) {
+	satellites, err := service.FindAll()
+
+	if err != nil {
+		return models.TransmitterModel{}, err
+	}
+
+	location, err := service.GetLocation(satellites)
+	if err != nil {
+		return models.TransmitterModel{}, err
+	}
+
+	message, err := service.GetMessage(satellites)
+	if err != nil {
+		return models.TransmitterModel{}, err
+	}
+
+	return models.TransmitterModel{Position: location, Message: message}, nil
 }

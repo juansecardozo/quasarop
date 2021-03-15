@@ -9,14 +9,12 @@ type IChiRouter interface {
 type router struct{}
 
 func (router *router) InitRouter() *chi.Mux {
-	communicationController := ServiceContainer().InjectCommunicationController()
-	channelController := ServiceContainer().InjectChannelController()
 	topSecretController := ServiceContainer().InjectTopSecretController()
 
 	r := chi.NewRouter()
-	r.Get("/satellites/{name}", communicationController.GetSatelliteResponse)
-	r.Post("/channels", channelController.StoreChannelResponse)
 	r.Post("/topsecret", topSecretController.ResolveTransmitterResponse)
+	r.Post("/topsecret_split/{satellite_name}", topSecretController.UpdateSatelliteResponse)
+	r.Get("/topsecret_split", topSecretController.ResolveSplitTransmitterResponse)
 
 	return r
 }
