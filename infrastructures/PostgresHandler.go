@@ -3,7 +3,7 @@ package infrastructures
 import (
 	"database/sql"
 
-	"github.com/juansecardozo/quasar/interfaces"
+	"github.com/juansecardozo/quasarop/interfaces"
 )
 
 type PostgresHandler struct {

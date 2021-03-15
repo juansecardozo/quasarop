@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/juansecardozo/quasar/interfaces"
-	"github.com/juansecardozo/quasar/models"
-	"github.com/juansecardozo/quasar/viewmodels"
+	"github.com/juansecardozo/quasarop/interfaces"
+	"github.com/juansecardozo/quasarop/models"
+	"github.com/juansecardozo/quasarop/viewmodels"
 )
 
 type TopSecretController struct {

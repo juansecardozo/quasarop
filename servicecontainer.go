@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/juansecardozo/quasar/controllers"
-	"github.com/juansecardozo/quasar/infrastructures"
-	"github.com/juansecardozo/quasar/repositories"
-	"github.com/juansecardozo/quasar/services"
+	"github.com/juansecardozo/quasarop/controllers"
+	"github.com/juansecardozo/quasarop/infrastructures"
+	"github.com/juansecardozo/quasarop/repositories"
+	"github.com/juansecardozo/quasarop/services"
 	_ "github.com/lib/pq"
 )
 

@@ -1,4 +1,4 @@
-module github.com/juansecardozo/quasar
+module github.com/juansecardozo/quasarop
 
 go 1.16
 

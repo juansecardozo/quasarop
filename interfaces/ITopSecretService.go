@@ -3,7 +3,7 @@ package interfaces
 import (
 	"net/http"
 
-	"github.com/juansecardozo/quasar/models"
+	"github.com/juansecardozo/quasarop/models"
 )
 
 type ITopSecretService interface {
