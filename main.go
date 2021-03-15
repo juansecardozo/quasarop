@@ -14,5 +14,11 @@ func main() {
 	if err != nil {
 		fmt.Println("Error loading .env file")
 	}
-	http.ListenAndServe(os.Getenv("DB_PORT"), ChiRouter().InitRouter())
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "9000" // Default port if not specified
+	}
+
+	http.ListenAndServe(":"+port, ChiRouter().InitRouter())
 }
